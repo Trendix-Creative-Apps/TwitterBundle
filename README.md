@@ -1,6 +1,6 @@
 # Trendix Twitter Bundle
 
-Welcome to our brand new Twitter Bundle. With this bundle, you can easily authenticate a user at twitter so your Symfony
+Welcome to our brand new Twitter Bundle. With this bundle, you can easily authenticate a user at twitter so your Symfony 2.8 or 3.*
 application can read and tweet on user's behalf with their authorization.
 
 This project is still at alpha, but we are going to improve its functionality and documentation soon enough.
