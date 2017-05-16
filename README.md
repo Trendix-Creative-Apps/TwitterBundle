@@ -7,16 +7,14 @@ This project is still at alpha, but we are going to improve its functionality an
 
 ## How can I install this bundle?
 
-Sorry, but at this moment we don't provide a standard way of using it. We plan to register this at composer, though.
-
-## How do I use this bundle?
-
-Once you've installed it, you can take different focuses. But first of all, you should follow these steps:
-
-1. [Create and configure a Twitter app](https://apps.twitter.com/app/new), if you don't have one already.
-2. In the app Setting, set the Callback URL to the URL use to login and redirect the user to the app (by default the 
+1. Install our bundle using composer:
+```
+composer require trendix/twitter-bundle
+```
+2. [Create and configure a Twitter app](https://apps.twitter.com/app/new), if you don't have one already.
+3. In the app Setting, set the Callback URL to the URL use to login and redirect the user to the app (by default the 
 route is called `trendix_twitter_login`, look at TwitterController:twitterLogin).
-3. Add to the Kernel our bundle:
+4. Add to the Kernel our bundle:
 ````
 $bundles = array(
     new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
@@ -25,14 +23,14 @@ $bundles = array(
 );
    
 ````
-4. Add also the routing configuration to your routing.yml: 
+5. Add also the routing configuration to your routing.yml: 
 ````
 trendix_twitter:
     resource: "@TrendixTwitterBundle/Controller/"
     type:     annotation
     prefix:   /
 ````
-5. Add these four parameters to your parameters.yml with your twitter app data:, at "Keys and Access Tokens" tab:
+6. Add these four parameters to your parameters.yml with your twitter app data:, at "Keys and Access Tokens" tab:
 ````
 parameters:
     ...
@@ -43,7 +41,7 @@ parameters:
     twitter_access_token_secret: '' # Access Token Secret
 ````
 
-### The simple one
+## How can I use this bundle?
 
 Just follow our DefaultController:test example. Just include our twitter_widget and twitter_includes in your template 
 and it should be ready to work.
