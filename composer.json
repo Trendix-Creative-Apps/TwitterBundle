@@ -1,0 +1,13 @@
+{
+    "name": "trendix/twitter-bundle",
+    "license": "MIT",
+    "type": "symfony-bundle",
+    "description": "Twitter login and other functionalities",
+    "autoload": {
+        "psr-4": {
+            "Trendix\\TwitterBundle\\": "src"
+        }
+    },
+    "require": {
+    }
+}

@@ -1,0 +1,34 @@
+
+<div id="loader">
+    <img src="/bundles/web/images/loading.gif" alt="loader">
+</div>
+
+<div class="twitter-window">
+    <div id="twitter-login-helper">
+        <div>
+            {{ 'home.click_to_login'|trans }}
+        </div>
+    </div>
+    <div class="chat-response-container">
+        <div class="chat-response">
+            <form action="">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div>
+                            <input type="hidden" name="reply-to" id="reply-to"/>
+                            <div id="reply-to-label"></div>
+                            <textarea name="message" id="message" placeholder="{{ 'tweet_us'|trans }}" class="form-control emoji"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-xs-6" id="twitter-username">
+                    </div>
+                    <div class="col-md-4 col-xs-6 text-right">
+                        <a class="btn btn-success" href="#" id="send-tweet">{{ 'form.submit'|trans }}</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="twitter-timeline-container" id="twitter-timeline-container">
+    </div>
+</div>

@@ -1,0 +1,215 @@
+var twitterData = [];
+$(document).ready(function () {
+    function parseTweet(status) {
+        var date = new Date(status.created_at);
+        moment.defineLocale('es', {
+            relativeTime: {
+                future: "en %s",
+                past: "%s",
+                s: "ahora mismo",
+                m: "1 m",
+                mm: "%d m",
+                h: "1 h",
+                hh: "%d h",
+                d: "1 d",
+                dd: "%d d",
+                M: "1 m",
+                MM: "%d m",
+                y: "1 año",
+                yy: "%d años"
+            }
+        });
+        // get relative date:
+        date = moment(date).fromNow();
+
+        var text = status.text,
+            usersRegex = /(^|[^@\w])@(\w{1,15})\b/g,
+            usersReplace = '$1<a href="http://twitter.com/$2" target="_blank">@$2</a>';
+        text = text.replace(usersRegex, usersReplace);
+
+        // convert hashtags in links
+        var hashtagRegex = /(^|[^#\w])#(\w{1,15})\b/g,
+            hashtagReplace = '$1<a href="https://twitter.com/hashtag/$2?src=hash" target="_blank">#$2</a>';
+        text = text.replace(hashtagRegex, hashtagReplace);
+        text = linkifyHtml(text);
+
+        var response = '';
+        if(status.in_reply_to_status_id) {
+            response = '<a class="response-to" href="#" data-id="'
+                + status.in_reply_to_status_id_str + '"> {{ 'home.response_to' | trans }}'
+                + '</a>';
+        }
+
+        var tweet = '<div class="tweet clearfix" data-id="' + status.id_str + '">' +
+            '<div class="user-data">' +
+            '<div class="profile-picture"><img src="' + status.user.profile_image_url + '" alt="@' + status.user.screen_name + '"/></div>' +
+            '<div class="tweet-user"><a target="_blank" href="http://twitter.com/' + status.user.screen_name + '">' + status.user.name + '</a></div>' +
+            '</div>' +
+            '<div class="text">' + text +
+            '<a href="#" class="reply" data-target="' + status.id_str + '" data-user="' + status.user.name + '" data-screen="' + status.user.screen_name +
+            '"><i class="fa fa-reply"></i></a>' + response +
+            '</div>' +
+            '<div class="time" data-time="' + status.created_at + '">' + date + '</div>' +
+            '<div class="response-origin"></div>' +
+            '</div>';
+        return tweet;
+    }
+
+    var token, secret, userID, username;
+    {% if oauth_token is defined %}
+    token = '{{ oauth_token }}';
+    {% endif %}
+    {% if oauth_token_secret is defined %}
+    secret = '{{ oauth_token_secret }}';
+    {% endif %}
+    {% if user_id is defined %}
+    userID = '{{ user_id }}';
+    {% endif %}
+    {% if screen_name is defined %}
+    username = '{{ screen_name }}';
+    {% endif %}
+    var $open_chat = $(".open-chat");
+
+    $open_chat.hide();
+
+    $open_chat.click(function () {
+        $(".twitter-window").attr("style", "display: block !important");
+        $(this).attr("style", "display: none !important");
+        $("html, body").animate({
+            scrollTop: 0
+        }, "slow");
+    });
+
+    $('#twitter-login-helper').click(function (e) {
+        $.ajax('{{ path('trendix_twitter_request_token') }}').done(function (data) {
+            window.location.href = 'https://api.twitter.com/oauth/authorize?oauth_token=' + data.oauth_token;
+        });
+    });
+
+    if (!token && !secret) {
+        $.cookie.raw = true;
+        $.cookie.json = true;
+
+        if (typeof $.cookie('twitter_token') != 'undefined' && $.cookie('twitter_token')) {
+            token = $.cookie('twitter_token').replace(/"/g, '');
+        }
+
+        if (typeof $.cookie('twitter_secret') != 'undefined' && $.cookie('twitter_secret')) {
+            secret = $.cookie('twitter_secret').replace(/"/g, '');
+        }
+
+        if (typeof $.cookie('twitter_id') != 'undefined' && $.cookie('twitter_id')) {
+            userID = $.cookie('twitter_id').replace(/"/g, '');
+        }
+
+        if (typeof $.cookie('twitter_name') != 'undefined' && $.cookie('twitter_name')) {
+            username = $.cookie('twitter_name').replace(/"/g, '');
+        }
+    }
+
+    if (token && secret) {
+        $.cookie('twitter_token', token);
+        $.cookie('twitter_secret', secret);
+        $.cookie('twitter_id', userID);
+        $.cookie('twitter_name', username);
+
+        $('.twitter-window').addClass('logged');
+        twitterData = {
+            oauth_token: token,
+            oauth_token_secret: secret,
+            user_id: userID,
+            username: username
+        };
+        $('#twitter-username').html('{{ 'home.tweet_as' | trans }} <a target="_blank" href="http://twitter.com/' + username + '">@' + username + '</a>');
+        $('#send-tweet').click(function (e) {
+            e.preventDefault();
+            var data = twitterData;
+
+            data.status = $('#message').val();
+            data.reply = $('#reply-to').val();
+            var loader = $('#loader');
+            loader.css('display', 'block');
+            $.ajax({
+                url: '{{ path('trendix_twitter_send_tweet') }}',
+                method: 'POST',
+                data: data
+            }).done(function (data) {
+                $('#message').val('');
+                $('#tweet-sent').modal('show');
+                loader.css('display', 'none');
+                $('#reply-to').val('');
+                $('#reply-to-label').empty();
+            });
+        });
+        function updateTweets() {
+            $.ajax({
+                url: '{{ path('trendix_twitter_search') }}',
+                method: 'POST',
+                data: twitterData
+            }).done(function (data) {
+                // If the authentication fails, remove cookies
+                if(data.errors && data.errors.length > 0) {
+                    for(var i in data.errors) {
+                        //if(data.errors[i].code == 215) {
+                        $.cookie('twitter_token', false);
+                        $.cookie('twitter_secret', false);
+                        $.cookie('twitter_id', false);
+                        $.cookie('twitter_name', false);
+                        //}
+                    }
+                }
+                var statuses = data.statuses;
+                statuses.reverse();
+                var tweetsContainer = $('#twitter-timeline-container');
+                for (var i in statuses) {
+                    var tweet = '';
+                    if ($('.tweet[data-id="' + statuses[i].id_str + '"]').length == 0) {
+                        tweet = parseTweet(statuses[i]);
+                        tweetsContainer.prepend(tweet);
+
+                    }
+                }
+            });
+        }
+
+        updateTweets();
+        setInterval(updateTweets, 10000);
+
+        $(document).on('click', '.response-to', function(e) {
+            e.preventDefault();
+            var tData = twitterData;
+            tData.tweet_id = $(this).data('id');
+            console.log('click');
+            var button = $(this);
+            $.ajax({
+                url: '{{ path('trendix_twitter_get_tweet') }}',
+                method: 'POST',
+                data: tData
+            }).done(function (data) {
+                var tweet = parseTweet(data);
+                console.log(button.closest('.tweet'));
+                var container = button.closest('.tweet').find('.response-origin');
+                console.log(container);
+                container.html(tweet);
+                button.addClass('hidden');
+
+            });
+        });
+
+        $(document).on('click', '.reply', function(e) {
+            e.preventDefault();
+            $('#reply-to').val($(this).data('target'));
+            $('#reply-to-label').html('{{ 'home.reply_to' | trans }} ' + $(this).data('user'));
+            $('#message').val('@' + $(this).data('screen'));
+        });
+    }
+    updateTimes();
+});
+
+function updateTimes() {
+    $('.time').each(function() {
+        var date = new Date($(this).data('time'));
+        $(this).text(moment(date).fromNow());
+    });
+    setTimeout(updateTimes, 5000);
+}

@@ -1,0 +1,24 @@
+{
+  "name": "twitter-bundle",
+  "authors": [
+    "Jose Alcantara <jose@trendix.es>",
+    "Jesus Muriel <jesus@trendix.es>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "linkifyjs": "^2.1.4",
+    "moment": "^2.18.1",
+    "jquery.cookie": "^1.4.1"
+  }
+}

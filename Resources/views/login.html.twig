@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}Redirecting...{% endblock %}</title>
+
+    {% block css %}{% endblock %}
+
+    <link rel="shortcut icon" type="image/x-icon" href="/images/web/images/favicon.png">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/front.css?v={{ date().timestamp  }}">
+    <link rel="stylesheet" type="text/css" href="/bundles/web/css/cookiecuttr.css?v={{ date().timestamp  }}">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="/js/header.js"></script>
+</head>
+<body>
+    <p>Redirecting...</p>
+    <div class="hidden">
+        <form method="post" action="{{ path(redirect) }}">
+            <input type="hidden" value="{{ oauth_token }}" name="oauth_token">
+            <input type="hidden" value="{{ oauth_token_secret }}" name="oauth_token_secret">
+            <input type="hidden" value="{{ user_id }}" name="user_id">
+            <input type="hidden" value="{{ screen_name }}" name="screen_name">
+            <input type="submit" id="submit"/>
+        </form>
+    </div>
+    
+    <script src="{{ asset('components/jquery/dist/jquery.js') }}"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#submit').trigger('click');
+        });
+    </script>
+</body>
+</html>

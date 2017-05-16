@@ -1,0 +1,159 @@
+#loader {
+    background-color: #fff;
+    width: 100%;
+    height: 100vh;
+    z-index: 300;
+    display: none;
+    text-align: center;
+    position: fixed;
+    top: 0;
+}
+#loader img {
+    margin: auto;
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -15px;
+    margin-left: -15px;
+    width: 60px;
+    height: 60px;
+}
+.twitter-window {
+    position: relative;
+    margin-top: -10px;
+}
+.twitter-window.logged #twitter-login-helper {
+    display: none;
+    z-index: -1;
+}
+.twitter-window:not(.logged) #twitter-login-helper {
+    display: block;
+    z-index: 300;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #388e3c;
+    color: white;
+    font-size: 24px;
+    text-align: center;
+    cursor: pointer;
+    opacity: 0.8;
+}
+.twitter-window:not(.logged) #twitter-login-helper > div {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    text-align: center;
+}
+.twitter-window .header-window img {
+    padding-top: 1%;
+    padding-bottom: 1%;
+    display: block;
+    margin: 0 auto;
+}
+.twitter-window .header-window button.btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background-color: #a5d6a7;
+    color: white;
+    border-radius: 0 0 0 5px;
+}
+.twitter-window .header-window button.btn:hover {
+    background-color: #b7deb8;
+}
+.twitter-window .chat-response-container {
+    margin: 0 auto;
+    width: 100%;
+    padding: 15px;
+    background-color: #ebf2eb;
+    color: #388e3c;
+    position: relative;
+}
+.twitter-window .chat-response-container .chat-response a.btn {
+    margin: 15px;
+    color: #ffF;
+}
+.twitter-window .chat-response-container .chat-response .row .col-md-10 {
+    padding-left: 0;
+}
+.twitter-window .chat-response-container .chat-response .row .col-md-10 textarea {
+    margin-top: 18px;
+    padding-top: 12px;
+    padding-left: 12px;
+    max-width: 867px;
+    resize: none;
+}
+.twitter-window .twitter-timeline-container {
+    text-align: center;
+}
+.twitter-window #twitter-widget-0 {
+    width: 90% !important;
+    height: 250px !important;
+}
+.twitter-window #twitter-widget-0 .timeline-Header {
+    display: none;
+}
+.timeline-Header-title {
+    display: none !important;
+}
+.open-chat {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 5000;
+}
+.open-chat button.btn {
+    background-color: #388e3c;
+    color: white;
+}
+.open-chat button.btn:hover {
+    background-color: #3fa044;
+}
+.twitter-timeline-container {
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    height: 295px;
+    overflow-y: auto;
+}
+.twitter-timeline-container .tweet {
+    padding: 10px 20px;
+}
+.twitter-timeline-container .tweet .user-data {
+    float: left;
+    background: #fff;
+}
+.twitter-timeline-container .tweet .text {
+    float: left;
+    background-color: #fff;
+}
+.twitter-timeline-container .tweet .time {
+    float: right;
+}
+.twitter-timeline-container .tweet a.reply {
+    display: inline-block;
+    margin-left: 10px;
+}
+.twitter-timeline-container .tweet a.response-to {
+    display: block;
+    font-size: 12px;
+    font-style: italic;
+    text-align: left;
+}
+.twitter-timeline-container .tweet .response-origin {
+    padding-left: 30px;
+}
+.twitter-timeline-container .tweet .response-origin .tweet {
+    border-left: 2px solid #388e3c;
+    border-bottom: 2px solid #388e3c;
+    padding-right: 0;
+    margin-top: 65px;
+}
+.twitter-timeline-container .tweet .response-origin .tweet .user-data {
+    min-width: 75px;
+}
