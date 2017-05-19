@@ -23,6 +23,7 @@ class TwitterController extends TwitterAPI
     public function testAction(Request $request)
     {
         $this->addData($request->request->all());
+        $this->checkIfLogged($request);
         return $this->render('TrendixTwitterBundle::test.html.twig', $this->getData());
     }
 

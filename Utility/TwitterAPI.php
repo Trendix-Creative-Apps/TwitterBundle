@@ -10,6 +10,7 @@ namespace Trendix\TwitterBundle\Utility;
 
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 
 class TwitterAPI extends Controller
 {
@@ -78,8 +79,8 @@ class TwitterAPI extends Controller
     /**
      * 2nd step. After the user authorizes the application, we must retrieve the access token, using the token
      * and verifier received from step 1.
-     * @param $token oauth_token
-     * @param $verifier oauth_verifier
+     * @param $token string oauth_token
+     * @param $verifier string oauth_verifier
      * @return array With oauth_token, oauth_token_secret, user_id and screen_name
      */
     protected function twitterLogin($token, $verifier)
@@ -88,7 +89,6 @@ class TwitterAPI extends Controller
         $curl->setURL('oauth/access_token');
         $curl->setMethod('POST');
         $nonce = uniqid();
-        $callback = urlencode('/twitter-login');
         $timestamp = date_timestamp_get(new \DateTime());
         $consumerKey = $this->getParameter('twitter_consumer');
         $oauthOptions = [
@@ -108,9 +108,9 @@ class TwitterAPI extends Controller
     }
 
     /** Sends a tweet in behalf of the authenticated user
-     * @param $token oauth_token
-     * @param $tokenSecret oauth_token_secret
-     * @param $status Tweet text
+     * @param $token string oauth_token
+     * @param $tokenSecret string oauth_token_secret
+     * @param $status string Tweet text
      * @param string|integer|null $replyToId ID of the tweet this twwet is replying to, if needed
      * @param string|null $prependText String to concatenate before the rest of the text
      * @param string|null $appendText String to concatenate before the rest of the text
@@ -118,6 +118,8 @@ class TwitterAPI extends Controller
      */
     protected function sendTweet($token, $tokenSecret, $status, $replyToId = null, $prependText = null, $appendText = null)
     {
+        $token = $this->decryptData($token);
+        $tokenSecret = $this->decryptData($tokenSecret);
         $curl = new OAuthAPI('https://api.twitter.com/');
         $curl->setURL('1.1/statuses/update.json');
         $curl->setMethod('POST');
@@ -139,13 +141,15 @@ class TwitterAPI extends Controller
 
     /**
      * Use this as guide for making search queries https://dev.twitter.com/rest/public/search
-     * @param $token oauth_token
-     * @param $tokenSecret oauth_token_secrent
+     * @param $token string oauth_token
+     * @param $tokenSecret string oauth_token_secret
      * @param $searchParameters array search parameters. "q" is the basic parameter for searches. use %40 for @ and %23 for #.
      * @return array Array of tweets, presented as described here: https://dev.twitter.com/rest/reference/get/search/tweets
      */
     protected function searchTweets($token, $tokenSecret, $searchParameters)
     {
+        $token = $this->decryptData($token);
+        $tokenSecret = $this->decryptData($tokenSecret);
         $curl = new OAuthAPI('https://api.twitter.com/');
         $curl->setURL('1.1/search/tweets.json');
         $curl->setMethod('GET');
@@ -165,6 +169,8 @@ class TwitterAPI extends Controller
      */
     protected function getSingleTweet($token, $tokenSecret, $tweetId)
     {
+        $token = $this->decryptData($token);
+        $tokenSecret = $this->decryptData($tokenSecret);
         $curl = new OAuthAPI('https://api.twitter.com/');
         $curl->setURL('1.1/statuses/show.json');
         $curl->setMethod('GET');
@@ -199,5 +205,32 @@ class TwitterAPI extends Controller
         ];
         $curl->setOAuthData($oauthOptions);
         $curl->setOAuthSecrets($oauthSecrets);
+    }
+
+    /**
+     * @param Request $request
+     */
+    protected function checkIfLogged(Request $request)
+    {
+        $token = $request->request->has('oauth_token') ? $request->request->get('oauth_token') : null;
+        $tokenSecret = $request->request->has('oauth_token_secret') ? $request->request->get('oauth_token_secret') : null;
+        if ($token && $tokenSecret) {
+            $this->addData('oauth_token', $this->encryptData($token));
+            $this->addData('oauth_token_secret', $this->encryptData($tokenSecret));
+        }
+    }
+
+    public function encryptData($data)
+    {
+        $salt = $this->getParameter('twitter_salt');
+        $method = 'AES-128-CBC';
+        return openssl_encrypt($data, $method, $salt);
+    }
+
+    public function decryptData($data)
+    {
+        $salt = $this->getParameter('twitter_salt');
+        $method = 'AES-128-CBC';
+        return openssl_decrypt($data, $method, $salt);
     }
 }
