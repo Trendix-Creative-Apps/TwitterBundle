@@ -26,11 +26,10 @@ $bundles = array(
 5. Add also the routing configuration to your routing.yml: 
 ````
 trendix_twitter:
-    resource: "@TrendixTwitterBundle/Controller/"
-    type:     annotation
+    resource: "@TrendixTwitterBundle/Resources/config/routing.yml"
     prefix:   /
 ````
-6. Add these four parameters to your parameters.yml with your twitter app data:, at "Keys and Access Tokens" tab:
+6. Add these five parameters to your parameters.yml with your twitter app data:, at "Keys and Access Tokens" tab:
 ````
 parameters:
     ...
@@ -39,6 +38,7 @@ parameters:
     twitter_consumer_secret: '' # Consumer Secret (API Secret)
     twitter_access_token: '' # Access Token
     twitter_access_token_secret: '' # Access Token Secret
+    twitter_salt: '' # Used for security. Just put a phrase or any string and don't tell it to anyone else.
 ````
 
 ## How can I use this bundle?

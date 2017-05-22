@@ -1,0 +1,4 @@
+trendix_twitter:
+    resource: "@TrendixTwitterBundle/Controller/"
+    type:     annotation
+    prefix: /
